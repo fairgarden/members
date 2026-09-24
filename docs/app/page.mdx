@@ -1,0 +1,28 @@
+# @fairgarden-private/members
+
+What membership means in a FairGarden deployment, and the profile members
+choose to share with the community.
+
+Who a person is — their email, name, phone, addresses — belongs to the id
+service. Members signs in with it like any other service, keeps only what the
+person agreed to share, and adds what is its own: whether they are a member,
+since when, in what roles, and what they call themselves here. Who may join is
+the organization's policy's to say. Other services get a membership through
+the id service, as the `membership` scope, when the member says so.
+
+## Start here
+
+- [Overview](/overview) — what the service keeps, and why
+- [Signing in](/overview/signing-in) — members as an OpenID Connect client
+- [Membership and profile](/overview/membership) — joining, referrals, and what a member is here
+- [Claims reviews](/overview/claims) — answering the id service for `membership`
+- [Policy](/overview/policy) — who may join, what is asked of the id service, and what leaves
+- [Commands](/commands) and [Configuration](/configuration)
+
+## Run it
+
+```bash
+pnpm dev            # http://localhost:3020
+```
+
+with the id service on 3010, which `.env.development` points at.

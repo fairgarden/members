@@ -1,0 +1,33 @@
+# Signing in
+
+Members is a confidential OpenID Connect client of the id service, through
+[openid-client](https://github.com/panva/openid-client).
+
+- `/auth/login` sends the browser to the id service with a PKCE challenge,
+  a state and a nonce, remembered for ten minutes in an encrypted cookie.
+  `?returnTo=` is where to come back to — a referral link, say — and
+  `?consent` asks the person again what to share.
+- `/auth/callback` checks what came back, fetches nothing it was not given,
+  refreshes a member's email and name, and starts a session. Signing in does
+  not make anyone a member: [joining](/overview/membership#joining) does.
+  Without an email address — declined on the id service's page — there is
+  nothing to keep a membership by, so it asks them to sign in again and share
+  it. When something goes wrong, it goes back to where they started, saying
+  what.
+- `/auth/logout` ends the session here, then sends the browser to the id
+  service to end it there, which asks the person to confirm. Only this
+  service's own pages can post to it.
+
+What it asks for is the [policy's `scopes` decision](/overview/policy#scopes):
+`openid email profile`, enough to know who someone is and what to call them,
+and whatever the organization's rules for joining read — where they live,
+say. The id service asks the person before it shares any of it.
+
+## Sessions
+
+A session is an encrypted cookie (`dir`, `A256GCM`, keyed from
+`FG_MEMBERS_SECRET`) holding who signed in, what the id service vouched for —
+whether their email is verified, and their addresses when they shared them —
+and the ID token to sign out with. Nothing about a session is stored here,
+and it lasts twelve hours; signing in again brings back anything changed at
+the id service since.

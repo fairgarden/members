@@ -1,0 +1,84 @@
+import { EncryptJWT, jwtDecrypt, type JWTPayload } from 'jose'
+import { cookies } from 'next/headers'
+import { getConfig } from './config.ts'
+import type { Address } from './policy.ts'
+
+/**
+ * The members session, and the state of a sign-in in progress, each kept in
+ * an encrypted cookie: nothing about a session is stored server side.
+ */
+
+const SESSION_COOKIE = 'fg_members_session'
+const FLOW_COOKIE = 'fg_members_flow'
+const SESSION_HOURS = 12
+
+export interface Session {
+  sub: string
+  email: string
+  emailVerified: boolean
+  name: string | null
+  /** Where they receive post and where they live: only when the policy asked, and they chose to share it. */
+  address?: Address
+  residentialAddress?: Address
+  /** Sent back to the id service when signing out, to say who. */
+  idToken: string
+}
+
+export interface Flow {
+  verifier: string
+  state: string
+  nonce: string
+  returnTo: string
+}
+
+const seal = (payload: JWTPayload, expires: string) =>
+  new EncryptJWT(payload)
+    .setProtectedHeader({ alg: 'dir', enc: 'A256GCM' })
+    .setIssuedAt()
+    .setExpirationTime(expires)
+    .encrypt(getConfig().sessionKey)
+
+const open = async <T>(value: string | undefined): Promise<T | undefined> => {
+  if (!value) return undefined
+  try {
+    const { payload } = await jwtDecrypt(value, getConfig().sessionKey)
+    return payload as T
+  } catch {
+    return undefined
+  }
+}
+
+const cookieOptions = () => ({
+  httpOnly: true,
+  sameSite: 'lax' as const,
+  secure: getConfig().url.startsWith('https:'),
+  path: '/',
+})
+
+export const currentSession = async (): Promise<Session | undefined> =>
+  open<Session>((await cookies()).get(SESSION_COOKIE)?.value)
+
+export const startSession = async (session: Session) => {
+  ;(await cookies()).set(SESSION_COOKIE, await seal({ ...session }, `${SESSION_HOURS}h`), {
+    ...cookieOptions(),
+    maxAge: SESSION_HOURS * 60 * 60,
+  })
+}
+
+export const endSession = async () => {
+  ;(await cookies()).delete({ name: SESSION_COOKIE, path: '/' })
+}
+
+export const saveFlow = async (flow: Flow) => {
+  ;(await cookies()).set(FLOW_COOKIE, await seal({ ...flow }, '10m'), {
+    ...cookieOptions(),
+    maxAge: 10 * 60,
+  })
+}
+
+export const takeFlow = async (): Promise<Flow | undefined> => {
+  const store = await cookies()
+  const flow = await open<Flow>(store.get(FLOW_COOKIE)?.value)
+  store.delete({ name: FLOW_COOKIE, path: '/' })
+  return flow
+}

@@ -1,0 +1,15 @@
+# Database
+
+Drizzle, over `pg`, the same as the id service: any Postgres, tables prefixed
+`members_`, and an embedded PGlite in `.data/members` (port 54320) when there
+is no database URL.
+
+```bash
+pnpm db:generate --name add-thing
+pnpm db:migrate
+pnpm db:rollback [--steps N | --to TAG]
+pnpm db:status
+```
+
+Each migration's rollback is the hand-written `<tag>.down.sql` beside it. A
+real database is only migrated by `pnpm db:migrate`.

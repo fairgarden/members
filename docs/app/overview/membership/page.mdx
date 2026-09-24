@@ -1,0 +1,59 @@
+# Membership and profile
+
+A member is keyed by the `sub` the id service gives them. Signing in does not
+make anyone a member; joining does, when the policy admits them.
+
+| | Set by |
+| --- | --- |
+| `status` — `probationary`, `active`, `lapsed` or `suspended` | the policy, on joining; then the organisation |
+| `roles` | the organisation |
+| `referredBy` | the member whose referral link they joined with |
+| `joinedAt` | joining |
+| `nickname`, `pronouns`, `bio` | the member, on their page |
+| `email`, `name` | the id service, refreshed at every sign-in, for showing |
+
+There is no page for the organisation's side yet; set it in the database.
+
+## Joining
+
+Someone signed in who is not a member sees what joining takes: the policy's
+[`admit`](/overview/policy#admit) decision, asked with what the id service
+vouches for about them and who referred them. If nothing stands in the way,
+they can join, at the status it gives. If something does, they are told each
+thing, and can share with Members what they held back, change something in
+their account, or check again once they have — and the policy is asked again
+when they ask to join.
+
+With no organization policy, anyone who signs in may join, as `active`.
+
+## Referrals
+
+A member can make referral links on their page, to give people they vouch
+for. Each works once, for 30 days, and whoever joins with it has the member
+recorded as `referredBy`. Someone who comes with one sees the referrer's
+nickname, if they chose one — never their name, since links get passed on. A
+link that no longer works counts for nothing, and stands in nobody's way. Whether a referral counts for anything is the
+policy's to say: an organization's rules might require one from an `active`
+member, and not count one from a `probationary` member.
+
+## Founding members
+
+When the rules for joining need members to exist already — a referral from an
+active member, say — the first ones are added directly:
+
+```bash
+pnpm members add --sub d4618cea-… --email ada@example.org --role founder
+```
+
+`--sub` is the account ID the id service gives them. `--status` is `active`
+unless it says `probationary`.
+
+## What other services see
+
+The `membership` claim, when the member shares it:
+
+```json
+{ "status": "active", "since": "2026-09-24T16:39:32.319Z", "roles": ["steward"], "nickname": "Sprout", "pronouns": "she/her" }
+```
+
+A bio is never part of it: it is for other members, on this service.

@@ -1,0 +1,28 @@
+# Testing
+
+Nothing outside this repository is needed — not even the id service.
+
+```bash
+pnpm test                               # vitest
+pnpm exec playwright install chromium   # once
+pnpm test:e2e                           # Playwright
+```
+
+The unit tests cover claims reviews (with a fake issuer publishing a JWKS,
+and every way a review can be forged), members and referrals, migrations, and
+policy — the built-in rules, and members' Rego built into a signed bundle with
+`examples/admission` on top. `pnpm policy:test` runs the Rego's own tests.
+
+The browser tests build the service for production on port 3120, beside
+`e2e/mock-id.ts` on 3121: an OpenID Provider built with oidc-provider, using
+its development sign-in screens (any login, any password). It also has
+`POST /test/claimsreviews`, which signs a `ClaimsReview` the way the id
+service does and sends it here, so the tests can check what a member's
+profile becomes when it leaves. Whatever login is typed says what it vouches
+for: `unverified` in it, an unverified email; `far`, living in San Francisco;
+`nowhere`, not sharing where they live.
+
+The same build also runs on port 3122 with `examples/admission` built on
+members' own rules, as a deployment would run an organization's policy, for
+the tests of joining under it: referrals from active members, probation, and
+living in the area.

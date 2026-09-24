@@ -1,0 +1,123 @@
+# Policy
+
+The members service asks the organization's policy three things, through
+[@fairgarden/policy](https://github.com/fairgarden/policy), as the id service
+does. Each is answered by members' built-in rules until an organization's
+policy says otherwise.
+
+## `admit`
+
+May this person join, at what status, and if not, what stands in the way?
+Asked while they read the join page (`Preview`), and again when they ask to
+join (`Join`):
+
+```json
+{
+  "user": { "name": "d4618cea-…" },
+  "purpose": "Join",
+  "applicant": {
+    "email": "ada@example.org",
+    "email_verified": true,
+    "name": "Ada",
+    "residential_address": { "locality": "Minneapolis", "postal_code": "55401", "country": "US" }
+  },
+  "referral": { "by": { "name": "…", "status": "active", "roles": ["founder"], "since": "2025-03-01T…" } }
+}
+```
+
+`applicant` is what the id service vouches for, as far as they let it share:
+`address` (where they receive post) and `residential_address` (where they
+live) only when the rules asked for them and they shared them, and as they
+gave them — id does not verify addresses. `referral` is there when they came with a member's link that still
+works.
+
+```json
+{ "allow": false, "status": "active", "reasons": { "referral": "A member needs to refer you. Ask one for a referral link." } }
+```
+
+Every reason is shown to them. Built in: anyone may join, as `active`.
+
+## `scopes`
+
+What to ask the id service for when someone signs in: `openid`, `email` and
+`profile`, and whatever else the organization's rules for joining read —
+`residential_address`, when who may join depends on where they live. When
+the rules need something the person held back, the join page offers to ask
+them again. They still choose, on
+the id service's consent screen.
+
+## `release`
+
+Which of a member's claims go to the service asking, and why not the rest:
+
+```json
+{
+  "user": { "name": "d4618cea-…" },
+  "client": { "id": "gallery", "name": "Gallery" },
+  "purpose": "Preview",
+  "claims": { "membership": { "status": "active", "roles": ["steward"] } }
+}
+```
+
+```json
+{ "claims": {}, "reasons": { "membership": "Only Events can see your membership." } }
+```
+
+The reasons go back to the id service in the review, and it shows them to the
+member on the consent screen. Built in: everything.
+
+## The organization's rules
+
+`policies/members.rego` asks these the way the built-in rules answer them,
+with places for an organization's own:
+
+```rego
+unmet[<requirement>] := <reason>   # something an applicant must do first
+status := <status>                 # what new members join as, when not "active"
+extra_scopes contains <scope>      # more to ask the id service for
+withheld[<claim>] := <reason>      # a claim kept from a service, or part of one: "membership.roles"
+```
+
+The organization writes them in its distribution's `policies/`, in package
+`fairgarden.members`. `examples/admission` is one: new members on probation,
+with a verified email, referred by an active member, living in Minneapolis
+(and nobody, should its settings go missing) —
+
+```rego
+unmet["referral"] := "A member needs to refer you. Ask one for a referral link." if {
+	not input.referral.by.status == "active"
+}
+```
+
+The distribution builds members' rules and the organization's into one
+policy when it deploys, and members' build takes a copy (`fg-dist policy
+use`) to run in process. On its own, outside a distribution, members has no
+policy to copy, and its built-in rules decide.
+
+```bash
+pnpm policy:test                                           # members' rules and tests
+fg-policy test --base policies --dir examples/admission    # with an organization's on top
+```
+
+The whole policy, in the organization's words, is on the id service's
+`/policy` page, which the join page links to.
+
+## Every decision is recorded
+
+In `members_policy_decisions`, in OPA's decision log format, labelled with
+the revision of the policy that made it, and kept
+`FG_MEMBERS_POLICY_LOG_RETENTION_DAYS` (400). Every revision members runs is
+kept in `members_policy_revisions`. What is not needed is left out: the
+claims on offer (the result records what left), and an applicant's email,
+name and addresses (their `sub` says who, the result whether it counted, and
+most who apply never join).
+
+```bash
+pnpm policy:log --subject d4618cea-… --since 30d
+```
+
+## Failing closed
+
+If the policy cannot be evaluated, nobody joins — they are told joining is
+unavailable — and nothing is released. Signing in still works, asking only
+for what membership needs.

@@ -1,0 +1,32 @@
+# Overview
+
+The members service is where most of what a community knows about someone
+lives. It is also an ordinary service of the id service, which keeps it honest:
+it only knows what people let it know, and only shares what they let it share.
+
+## The shape
+
+```
+apps/members/
+  app/                  the member's page, sign-in routes, and the API (app/api)
+  lib/                  the server side: sign-in, sessions, members, policy
+  drizzle/              database migrations, forward and back
+  policies/             members' questions, as Rego, for an organization's rules to build on
+  examples/admission/   an organization's rules for joining, to start from
+  test/  e2e/           unit tests (vitest) and browser tests (Playwright)
+```
+
+## What each piece does
+
+- **[Signing in](/overview/signing-in)** — authorization code with PKCE
+  against the id service, and a session in an encrypted cookie.
+- **[Membership and profile](/overview/membership)** — joining, when the
+  policy admits someone; referral links; status, roles and when someone
+  joined; a nickname, pronouns and a bio, set by the member.
+- **[Claims reviews](/overview/claims)** — the id service asking for the
+  `membership` claim, signed so only it can.
+- **[Policy](/overview/policy)** — who may join, what to ask the id service
+  for, and what leaves, each with reasons the person sees.
+- **[Database](/overview/database)** — Drizzle over any Postgres.
+- **[Testing](/overview/testing)** — with a mock id service, so nothing
+  outside this repository is needed.

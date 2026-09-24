@@ -1,0 +1,21 @@
+# Configuration
+
+| Variable | |
+| --- | --- |
+| `FG_MEMBERS_URL` | The public URL. Default: the Vercel deployment's domain, else `http://localhost:3020`. |
+| `FG_MEMBERS_ID_URL` | The id service's issuer. |
+| `FG_MEMBERS_CLIENT_ID` | As enrolled at the id service. Default `members`. |
+| `FG_MEMBERS_CLIENT_SECRET` | Its `FG_ID_SERVICE_MEMBERS_SECRET`. |
+| `FG_MEMBERS_SECRET` | Encrypts the session cookie. Required anywhere but localhost. |
+| `FG_MEMBERS_DATABASE_URL` | Any Postgres; `DATABASE_URL`, then `POSTGRES_URL`, when not set. |
+| `FG_MEMBERS_DATA_DIR` | The embedded database. Default `.data/members`. |
+| `FG_MEMBERS_EMBEDDED_DATABASE_PORT` | Default 54320. |
+| `FG_MEMBERS_DATABASE_POOL_SIZE` | Connections to a real Postgres. Default 5. |
+| `FG_MEMBERS_MIGRATIONS_DIR` | Where the migrations are, when not beside the module — in a monolith, say. |
+| `FG_POLICY_BUNDLE` | A policy from elsewhere than this deployment's build: a path or https URL, which must be signed. `none` for the built-in rules. Without it, the policy the deployment was built with. |
+| `FG_POLICY_PUBLIC_KEY` | The organization's key, which that policy must be signed with. |
+| `FG_POLICY_ALLOW_UNSIGNED` | `true` to run an unsigned `FG_POLICY_BUNDLE`, for trying policy locally. |
+| `FG_POLICY_OPA_URL` | An OPA server to ask instead. |
+| `FG_MEMBERS_POLICY_PACKAGE` | Default `fairgarden/members`. |
+| `FG_MEMBERS_POLICY_LOG_RETENTION_DAYS` | How long decisions are kept. Default 400. |
+| `FG_MEMBERS_POLICY_LOG_STDOUT` | `true` to also write each decision to standard output. |

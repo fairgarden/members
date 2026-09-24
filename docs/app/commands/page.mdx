@@ -1,0 +1,28 @@
+# Commands
+
+Run from the module, `apps/members`.
+
+```bash
+pnpm dev                           # http://localhost:3020
+pnpm build && pnpm start
+pnpm lint
+
+pnpm db:status
+pnpm db:migrate
+pnpm db:rollback [--steps N | --to TAG]
+pnpm db:generate --name NAME
+pnpm db:studio
+
+pnpm policy:test                   # policies/*_test.rego
+pnpm policy:build                  # members' rules alone, to policies.tar.gz, for trying locally
+pnpm policy:log [--subject SUB] [--decision NAME] [--since 24h] [--limit N]
+
+pnpm members add --sub SUB --email EMAIL [--name NAME] [--status active|probationary] [--role ROLE...]
+
+pnpm test
+pnpm test:e2e
+```
+
+`members add` makes someone a member without asking the policy: the
+[founders](/overview/membership#founding-members), when the rules for joining
+need members to exist already.

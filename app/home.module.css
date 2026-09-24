@@ -1,0 +1,27 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fgd-space-stack);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reason,
+.link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--fgd-space-stack) / 2);
+  padding-block-end: var(--fgd-space-stack);
+  border-block-end: 1px solid var(--role-hairline);
+}
+
+.url {
+  overflow-wrap: anywhere;
+}
+
+.muted {
+  color: var(--role-muted);
+}

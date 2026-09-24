@@ -1,0 +1,25 @@
+# Claims reviews
+
+The id service enrols members with `FG_ID_SERVICE_MEMBERS_CLAIMS=membership`,
+so the `membership` scope is this service's. When a person is deciding whether
+to share it with another service, and whenever it is released to one, the id
+service POSTs a `ClaimsReview` to `/api/v1alpha1/claimsreviews`.
+
+The contract is the id service's; see its documentation. What this service
+does with one, in `lib/claims-reviews.ts`:
+
+1. Verify the bearer token against the id service's JWKS, from its discovery
+   document: its issuer, this client ID as the audience, `typ`
+   `fg-claims-review+jwt`, and at most two minutes old.
+2. Check the token's `jti` and `sub` are the request's `uid` and `subject`.
+3. Look up the member, and build the `membership` claim if it was asked for.
+4. Put that to [policy](/overview/policy), and answer with what it allows,
+   and its reasons for the rest.
+
+Anyone who is not a member gets no claims, not an error.
+
+## The API
+
+Kubernetes style, like the id service's: `/api` and `/api/v1alpha1` for
+discovery, and the OpenAPI document at `/api/openapi/v3`, which refers to the
+id service's own for the `ClaimsReview` schema rather than copying it.
