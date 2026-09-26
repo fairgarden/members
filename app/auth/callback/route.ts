@@ -1,7 +1,7 @@
-import { completeSignIn } from '@fairgarden-private/members/lib/auth'
-import { getConfig } from '@fairgarden-private/members/lib/config'
-import { refreshMember } from '@fairgarden-private/members/lib/members'
-import { startSession, takeFlow } from '@fairgarden-private/members/lib/session'
+import { completeSignIn } from '@fairgarden/members/lib/auth'
+import { getConfig } from '@fairgarden/members/lib/config'
+import { refreshMember } from '@fairgarden/members/lib/members'
+import { startSession, takeFlow } from '@fairgarden/members/lib/session'
 
 // Back from the id service: check what it sent, and start a session.
 export const GET = async (request: Request) => {

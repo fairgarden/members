@@ -4,7 +4,7 @@ import { defineConfig } from 'vitest/config'
 // Unit tests: test/**/*.test.ts. The browser tests are Playwright's, in e2e/.
 export default defineConfig({
   resolve: {
-    alias: { '@fairgarden-private/members': path.resolve(import.meta.dirname) },
+    alias: { '@fairgarden/members': path.resolve(import.meta.dirname) },
   },
   test: {
     include: ['test/**/*.test.ts'],

@@ -37,12 +37,12 @@ const load = async (env: Record<string, string> = {}) => {
   }
   // Whatever a build left in .policy/, each test says which policy it means.
   Object.assign(process.env, env.FG_POLICY_BUNDLE || env.FG_POLICY_OPA_URL ? {} : { FG_POLICY_BUNDLE: 'none' }, env)
-  return import('@fairgarden-private/members/lib/policy')
+  return import('@fairgarden/members/lib/policy')
 }
 
 const recorded = async (subject: string) => {
-  const { db } = await import('@fairgarden-private/members/lib/db')
-  const { policyDecisions } = await import('@fairgarden-private/members/lib/schema')
+  const { db } = await import('@fairgarden/members/lib/db')
+  const { policyDecisions } = await import('@fairgarden/members/lib/schema')
   return (await (await db()).select().from(policyDecisions).where(eq(policyDecisions.subject, subject))).map(toEntry)
 }
 

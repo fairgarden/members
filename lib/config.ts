@@ -8,11 +8,13 @@ import { policySourceFromEnv, type PolicySource } from '@fairgarden/policy'
  * syntax Node can strip.
  */
 
-const PACKAGE_NAME = '@fairgarden-private/members'
+const PACKAGE_NAME = '@fairgarden/members'
 
 export interface Config {
   /** The public URL, including any monolith mount point. */
   url: string
+  /** The monolith mount point, or `''` when running on its own. */
+  mount: string
   /** The id service's issuer, which members signs in with. */
   issuer: string
   clientId: string
@@ -63,7 +65,8 @@ let cached: Config | undefined
 
 export const getConfig = (): Config => {
   if (cached) return cached
-  const url = `${publicUrl()}${mountPath()}`
+  const mount = mountPath()
+  const url = `${publicUrl()}${mount}`
   const local = /^http:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(url)
 
   const secret = env('FG_MEMBERS_SECRET')
@@ -71,6 +74,7 @@ export const getConfig = (): Config => {
 
   cached = {
     url,
+    mount,
     issuer: trimSlash(env('FG_MEMBERS_ID_URL') ?? 'http://localhost:3010'),
     clientId: env('FG_MEMBERS_CLIENT_ID') ?? 'members',
     clientSecret: env('FG_MEMBERS_CLIENT_SECRET'),

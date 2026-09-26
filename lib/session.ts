@@ -48,11 +48,15 @@ const open = async <T>(value: string | undefined): Promise<T | undefined> => {
   }
 }
 
+// Only this app's own paths: inside a monolith the other apps share the origin,
+// and have no use for these.
+const cookiePath = () => getConfig().mount || '/'
+
 const cookieOptions = () => ({
   httpOnly: true,
   sameSite: 'lax' as const,
   secure: getConfig().url.startsWith('https:'),
-  path: '/',
+  path: cookiePath(),
 })
 
 export const currentSession = async (): Promise<Session | undefined> =>
@@ -66,7 +70,7 @@ export const startSession = async (session: Session) => {
 }
 
 export const endSession = async () => {
-  ;(await cookies()).delete({ name: SESSION_COOKIE, path: '/' })
+  ;(await cookies()).delete({ name: SESSION_COOKIE, path: cookiePath() })
 }
 
 export const saveFlow = async (flow: Flow) => {
@@ -79,6 +83,6 @@ export const saveFlow = async (flow: Flow) => {
 export const takeFlow = async (): Promise<Flow | undefined> => {
   const store = await cookies()
   const flow = await open<Flow>(store.get(FLOW_COOKIE)?.value)
-  store.delete({ name: FLOW_COOKIE, path: '/' })
+  store.delete({ name: FLOW_COOKIE, path: cookiePath() })
   return flow
 }

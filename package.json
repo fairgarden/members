@@ -1,5 +1,5 @@
 {
-  "name": "@fairgarden-private/members",
+  "name": "@fairgarden/members",
   "version": "0.1.0-alpha.0",
   "type": "module",
   "repository": {
@@ -7,7 +7,7 @@
     "url": "git+https://github.com/fairgarden/members.git"
   },
   "publishConfig": {
-    "access": "restricted"
+    "access": "public"
   },
   "files": [
     "app",
@@ -42,6 +42,7 @@
   "dependencies": {
     "@electric-sql/pglite": "^0.5.8",
     "@electric-sql/pglite-socket": "^0.2.11",
+    "@fairgarden/monolith": "^0.1.0-alpha.0",
     "@fairgarden/policy": "^0.1.0-alpha.0",
     "classnames": "^2.5.1",
     "drizzle-orm": "^0.45.3",

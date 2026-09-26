@@ -1,8 +1,8 @@
 import path from 'node:path'
 import { sql } from 'drizzle-orm'
 import { describe, expect, it } from 'vitest'
-import { db } from '@fairgarden-private/members/lib/db'
-import { migrate, rollback } from '@fairgarden-private/members/lib/migrator'
+import { db } from '@fairgarden/members/lib/db'
+import { migrate, rollback } from '@fairgarden/members/lib/migrator'
 import {
   admitMember,
   createReferral,
@@ -13,8 +13,8 @@ import {
   referralsOf,
   refreshMember,
   updateProfile,
-} from '@fairgarden-private/members/lib/members'
-import { referrals } from '@fairgarden-private/members/lib/schema'
+} from '@fairgarden/members/lib/members'
+import { referrals } from '@fairgarden/members/lib/schema'
 import { ROOT, useDatabase } from './helpers/database'
 
 describe('members', () => {

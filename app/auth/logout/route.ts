@@ -1,6 +1,6 @@
-import { signOutUrl } from '@fairgarden-private/members/lib/auth'
-import { getConfig } from '@fairgarden-private/members/lib/config'
-import { currentSession, endSession } from '@fairgarden-private/members/lib/session'
+import { signOutUrl } from '@fairgarden/members/lib/auth'
+import { getConfig } from '@fairgarden/members/lib/config'
+import { currentSession, endSession } from '@fairgarden/members/lib/session'
 
 // Sign out here, then at the id service, which asks the person to confirm
 // and sends them back. Only from this service's own pages: another site's

@@ -1,4 +1,4 @@
-import { getConfig } from '@fairgarden-private/members/lib/config'
+import { getConfig } from '@fairgarden/members/lib/config'
 
 // The OpenAPI 3.1 document for this service's API: so far, only the claims
 // reviews the id service sends. Their schema is the id service's own; it is

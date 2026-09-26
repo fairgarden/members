@@ -3,7 +3,7 @@ import { PGlite } from '@electric-sql/pglite'
 import { PGLiteSocketServer } from '@electric-sql/pglite-socket'
 import pg from 'pg'
 import { afterAll, beforeAll } from 'vitest'
-import { migrate } from '@fairgarden-private/members/lib/migrator'
+import { migrate } from '@fairgarden/members/lib/migrator'
 
 export const ROOT = path.resolve(import.meta.dirname, '..', '..')
 
@@ -31,7 +31,7 @@ export const useDatabase = ({ migrated = true } = {}) => {
 
   afterAll(async () => {
     await database.pool?.end()
-    const key = Symbol.for('@fairgarden-private/members/db')
+    const key = Symbol.for('@fairgarden/members/db')
     const holder = globalThis as Record<symbol, Promise<{ close(): Promise<void> }> | undefined>
     await (await holder[key]?.catch(() => undefined))?.close()
     delete holder[key]

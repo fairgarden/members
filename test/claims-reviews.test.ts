@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest'
-import { reviewClaims } from '@fairgarden-private/members/lib/claims-reviews'
-import { admitMember, updateProfile } from '@fairgarden-private/members/lib/members'
+import { reviewClaims } from '@fairgarden/members/lib/claims-reviews'
+import { admitMember, updateProfile } from '@fairgarden/members/lib/members'
 import { useDatabase } from './helpers/database'
 import { useIssuer } from './helpers/issuer'
 

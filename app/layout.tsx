@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { ClientProvider } from '@fairgarden/design/utils/ClientProvider'
 import '@fairgarden/design/utils/global.css'
 import '@fairgarden/design/utils/fonts'
-import './[locale]/icons.css'
+import './icons.css'
 
 export const metadata: Metadata = {
   title: 'Members',

@@ -2,12 +2,13 @@ import { Alert } from '@fairgarden/design/feedback/alert'
 import { Button } from '@fairgarden/design/actions/button'
 import { Tag } from '@fairgarden/design/feedback/tag'
 import type from '@fairgarden/design/utils/type.module.css'
-import { apply } from '@fairgarden-private/members/lib/admission'
-import { getConfig } from '@fairgarden-private/members/lib/config'
-import { findMember, referralsOf, type Member } from '@fairgarden-private/members/lib/members'
-import { requestedScopes } from '@fairgarden-private/members/lib/policy'
-import { currentSession, type Session } from '@fairgarden-private/members/lib/session'
-import { Note, Panel, Section, Stack } from '@fairgarden-private/members/lib/ui/Panel'
+import { apply } from '@fairgarden/members/lib/admission'
+import { getConfig } from '@fairgarden/members/lib/config'
+import { href } from '@fairgarden/members/lib/link'
+import { findMember, referralsOf, type Member } from '@fairgarden/members/lib/members'
+import { requestedScopes } from '@fairgarden/members/lib/policy'
+import { currentSession, type Session } from '@fairgarden/members/lib/session'
+import { Note, Panel, Section, Stack } from '@fairgarden/members/lib/ui/Panel'
 import { join, refer } from './actions'
 import styles from './home.module.css'
 import { ProfileForm } from './ProfileForm'
@@ -30,7 +31,7 @@ const STATUSES: Record<Member['status'], string> = {
 type Search = { error?: string; referral?: string }
 
 const signInHref = (returnTo: string, consent = false) =>
-  `/auth/login?${new URLSearchParams({ returnTo, ...(consent ? { consent: '' } : {}) })}`
+  href(`/auth/login?${new URLSearchParams({ returnTo, ...(consent ? { consent: '' } : {}) })}`)
 
 /** Where the organization's rules are shown in full: the id service's policy page. */
 const policyHref = () => `${getConfig().issuer}/policy`
@@ -46,7 +47,7 @@ function ErrorAlert({ error }: { error?: string }) {
 
 function SignOut() {
   return (
-    <form method="post" action="/auth/logout">
+    <form method="post" action={href('/auth/logout')}>
       <Button type="submit" variant="text">
         Sign Out
       </Button>

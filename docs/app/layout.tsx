@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: '@fairgarden-private/members',
+  title: '@fairgarden/members',
   description: 'Membership, and the profile members share with the community',
 }
 

@@ -1,5 +1,5 @@
-import { beginSignIn } from '@fairgarden-private/members/lib/auth'
-import { saveFlow } from '@fairgarden-private/members/lib/session'
+import { beginSignIn } from '@fairgarden/members/lib/auth'
+import { saveFlow } from '@fairgarden/members/lib/session'
 
 // Off to the id service to sign in; it comes back to /auth/callback.
 // `?consent` asks the person again what to share.

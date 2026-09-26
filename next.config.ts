@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next'
+import { withMonolithicPortability } from '@fairgarden/monolith'
 // import localesPlugin from '@react-aria/optimize-locales-plugin'
 
 const nextConfig: NextConfig = {
@@ -35,4 +36,5 @@ const nextConfig: NextConfig = {
   // },
 }
 
-export default nextConfig
+// Reports anything a monolith could not mount.
+export default withMonolithicPortability(nextConfig)

@@ -20,7 +20,7 @@ not what is published — the version here is always the next one.
    identifier. A prerelease gets no maintenance branch; there is no released
    line behind it yet.
 
-Every push to main publishes `@fairgarden-private/members@canary`. A canary is not a release and
+Every push to main publishes `@fairgarden/members@canary`. A canary is not a release and
 carries no promise; it is there so main can be tried without a checkout.
 
 <!-- /fg:releasing -->
@@ -44,7 +44,7 @@ Postgres starts in `.data/members`.
 ## Documentation
 
 ```bash
-pnpm --filter @fairgarden-private/members-docs dev   # http://localhost:3035
+pnpm --filter @fairgarden/members-docs dev   # http://localhost:3035
 ```
 
 ## Testing
