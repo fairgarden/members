@@ -82,7 +82,9 @@ The API follows Kubernetes conventions, with discovery at `/api` and
 
 Drizzle, over `pg`, with the schema in `lib/schema.ts` and migrations in
 `drizzle/`: `pnpm db:generate`, `db:migrate`, `db:rollback` and `db:status`
-work as they do in the id service.
+work as they do in the id service. A deployment's build migrates a real
+database after `next build` with `pnpm migrate` — or, mounted in a monolith,
+the monolith's build does.
 
 <!-- fg:releasing -->
 

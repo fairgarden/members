@@ -36,16 +36,21 @@ const seal = (payload: JWTPayload, expires: string) =>
     .setProtectedHeader({ alg: 'dir', enc: 'A256GCM' })
     .setIssuedAt()
     .setExpirationTime(expires)
-    .encrypt(getConfig().sessionKey)
+    .encrypt(getConfig().sessionKeys[0])
 
+// Sealed with the newest key; opened with whichever still works, so a cookie
+// sealed before a rotation outlives it.
 const open = async <T>(value: string | undefined): Promise<T | undefined> => {
   if (!value) return undefined
-  try {
-    const { payload } = await jwtDecrypt(value, getConfig().sessionKey)
-    return payload as T
-  } catch {
-    return undefined
+  for (const key of getConfig().sessionKeys) {
+    try {
+      const { payload } = await jwtDecrypt(value, key)
+      return payload as T
+    } catch {
+      // not this key, or not a cookie of ours
+    }
   }
+  return undefined
 }
 
 // Only this app's own paths: inside a monolith the other apps share the origin,

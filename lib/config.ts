@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto'
 import path from 'node:path'
+import { secretValues } from '@fairgarden/distribution/secrets'
 import { policySourceFromEnv, type PolicySource } from '@fairgarden/policy'
 
 /**
@@ -19,8 +20,11 @@ export interface Config {
   issuer: string
   clientId: string
   clientSecret: string | undefined
-  /** Encrypts the session cookie. */
-  sessionKey: Uint8Array
+  /**
+   * Encrypt the session cookie: the first seals, and every one opens, so a
+   * secret rotated in (`FG_MEMBERS_SECRET="new old"`) signs nobody out.
+   */
+  sessionKeys: Uint8Array[]
   databaseUrl: string | undefined
   dataDir: string
   embeddedDatabasePort: number
@@ -37,14 +41,16 @@ export interface Config {
 const env = (name: string): string | undefined => process.env[name]?.trim() || undefined
 const trimSlash = (value: string) => value.replace(/\/+$/, '')
 
-const mountPath = (): string => {
+/** Where a monolith mounted each app it serves, this one included; empty on its own. */
+const mounts = (): Record<string, string> => {
   try {
-    const mounts = JSON.parse(process.env.MONOLITH_MOUNTS ?? '{}') as Record<string, string>
-    return mounts[PACKAGE_NAME] ?? ''
+    return JSON.parse(process.env.MONOLITH_MOUNTS ?? '{}') as Record<string, string>
   } catch {
-    return ''
+    return {}
   }
 }
+
+const ID_PACKAGE = '@fairgarden/id'
 
 const publicUrl = (): string => {
   const configured = env('FG_MEMBERS_URL')
@@ -65,20 +71,46 @@ let cached: Config | undefined
 
 export const getConfig = (): Config => {
   if (cached) return cached
-  const mount = mountPath()
+  const mounted = mounts()
+  const mount = mounted[PACKAGE_NAME] ?? ''
   const url = `${publicUrl()}${mount}`
   const local = /^http:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(url)
 
-  const secret = env('FG_MEMBERS_SECRET')
-  if (!secret && !local) throw new Error('Set FG_MEMBERS_SECRET to a long random value.')
+  // Newest first, from its slots once rotated, or as set by hand.
+  const secrets = secretValues('FG_MEMBERS_SECRET')
+  if (secrets.length === 0 && !local) throw new Error('Set FG_MEMBERS_SECRET to a long random value.')
+
+  // Beside the id service in a monolith, everything about signing in with it
+  // follows from the one deployment: its issuer is this origin at its mount,
+  // and the client secret is the one variable both apps read — the one id
+  // knows this service by. On its own, the issuer has to be said.
+  const idMount = mounted[ID_PACKAGE]
+  const issuer =
+    env('FG_MEMBERS_ID_URL') ??
+    (idMount !== undefined ? `${trimSlash(env('FG_ID_URL') ?? publicUrl())}${idMount}` : undefined) ??
+    (local ? 'http://localhost:3010' : undefined)
+  if (!issuer) {
+    throw new Error(
+      "Set FG_MEMBERS_ID_URL to the id service's issuer: its FG_ID_URL, and its mount point if a monolith serves it."
+    )
+  }
+  const clientId = env('FG_MEMBERS_CLIENT_ID') ?? 'members'
+  const own = secretValues('FG_MEMBERS_CLIENT_SECRET')
+  const clientSecrets =
+    own.length > 0 || idMount === undefined
+      ? own
+      : secretValues(`FG_ID_SERVICE_${clientId.toUpperCase().replace(/-/g, '_')}_SECRET`)
 
   cached = {
     url,
     mount,
-    issuer: trimSlash(env('FG_MEMBERS_ID_URL') ?? 'http://localhost:3010'),
-    clientId: env('FG_MEMBERS_CLIENT_ID') ?? 'members',
-    clientSecret: env('FG_MEMBERS_CLIENT_SECRET'),
-    sessionKey: createHash('sha256').update(secret ?? 'local development only').digest(),
+    issuer: trimSlash(issuer),
+    clientId,
+    // The newest: id accepts the ones before it until the next rotation.
+    clientSecret: clientSecrets[0],
+    sessionKeys: (secrets.length > 0 ? secrets : ['local development only']).map((secret) =>
+      createHash('sha256').update(secret).digest()
+    ),
     databaseUrl: env('FG_MEMBERS_DATABASE_URL') ?? env('DATABASE_URL') ?? env('POSTGRES_URL'),
     // Only for the embedded development database; not traced into a build.
     dataDir: path.resolve(/* turbopackIgnore: true */ env('FG_MEMBERS_DATA_DIR') ?? path.join('.data', 'members')),

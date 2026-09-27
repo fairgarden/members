@@ -3,10 +3,10 @@
 | Variable | |
 | --- | --- |
 | `FG_MEMBERS_URL` | The public URL. Default: the Vercel deployment's domain, else `http://localhost:3020`. |
-| `FG_MEMBERS_ID_URL` | The id service's issuer. |
+| `FG_MEMBERS_ID_URL` | The id service's issuer. Mounted beside it in a monolith, worked out: this origin at its mount. Otherwise required anywhere but localhost. |
 | `FG_MEMBERS_CLIENT_ID` | As enrolled at the id service. Default `members`. |
-| `FG_MEMBERS_CLIENT_SECRET` | Its `FG_ID_SERVICE_MEMBERS_SECRET`. |
-| `FG_MEMBERS_SECRET` | Encrypts the session cookie. Required anywhere but localhost. |
+| `FG_MEMBERS_CLIENT_SECRET` | Its `FG_ID_SERVICE_MEMBERS_SECRET`. In a monolith beside the id service, that variable is read instead: one value, both apps. |
+| `FG_MEMBERS_SECRET` | Encrypts the session cookie. Required anywhere but localhost. Rotated, it is `FG_MEMBERS_SECRET_A` and `_B`, with `FG_MEMBERS_SECRET_CURRENT` naming the one that seals; either opens. |
 | `FG_MEMBERS_DATABASE_URL` | Any Postgres; `DATABASE_URL`, then `POSTGRES_URL`, when not set. |
 | `FG_MEMBERS_DATA_DIR` | The embedded database. Default `.data/members`. |
 | `FG_MEMBERS_EMBEDDED_DATABASE_PORT` | Default 54320. |
