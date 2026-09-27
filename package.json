@@ -22,6 +22,7 @@
   "scripts": {
     "dev": "fg-dist policy use && next dev -p 3020",
     "build": "fg-dist policy use && next build",
+    "check-env": "fg-dist env check --build",
     "start": "next start",
     "lint": "eslint",
     "canary": "fg-dist canary",
@@ -40,11 +41,13 @@
     "members": "node lib/cli.ts members",
     "changelog": "fg-dist changelog",
     "dist": "fg-dist",
-    "next-version": "fg-dist next-version"
+    "next-version": "fg-dist next-version",
+    "migrate": "fg-dist migrate --build"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.8",
     "@electric-sql/pglite-socket": "^0.2.11",
+    "@fairgarden/distribution": "^0.1.0-alpha.7",
     "@fairgarden/monolith": "^0.1.0-alpha.0",
     "@fairgarden/policy": "^0.1.0-alpha.0",
     "classnames": "^2.5.1",
@@ -61,7 +64,6 @@
   },
   "devDependencies": {
     "@fairgarden/design": "^0.1.0-alpha.0",
-    "@fairgarden/distribution": "^0.1.0-alpha.6",
     "@material-symbols/font-600": "^0.47.4",
     "@playwright/test": "^1.63.0",
     "@react-aria/optimize-locales-plugin": "^2.0.2",
@@ -79,5 +81,66 @@
     "typescript": "^6.0.3",
     "vitest": "^5.0.1"
   },
-  "packageManager": "pnpm@10.28.0+sha512.05df71d1421f21399e053fde567cea34d446fa02c76571441bfc1c7956e98e363088982d940465fd34480d4d90a0668bc12362f8aa88000a64e83d0b0e47be48"
+  "packageManager": "pnpm@10.28.0+sha512.05df71d1421f21399e053fde567cea34d446fa02c76571441bfc1c7956e98e363088982d940465fd34480d4d90a0668bc12362f8aa88000a64e83d0b0e47be48",
+  "fairgarden": {
+    "migrations": {
+      "directory": "drizzle",
+      "table": "members_migrations",
+      "lock": 7031000101,
+      "database": [
+        "FG_MEMBERS_DATABASE_URL",
+        "DATABASE_URL",
+        "POSTGRES_URL"
+      ]
+    },
+    "idClient": {
+      "clientId": "members",
+      "name": "Members",
+      "claims": "membership"
+    },
+    "env": {
+      "FG_MEMBERS_SECRET": {
+        "description": "Encrypts the session cookie.",
+        "required": "deployed",
+        "generate": "secret",
+        "rotate": true
+      },
+      "FG_MEMBERS_ID_URL": {
+        "description": "The id service's issuer: its FG_ID_URL, and its mount point if a monolith serves it.",
+        "required": "deployed",
+        "example": "https://id.example.org",
+        "unlessMounted": "@fairgarden/id"
+      },
+      "FG_MEMBERS_CLIENT_SECRET": {
+        "description": "The secret members signs in to the id service with.",
+        "required": "deployed",
+        "generate": "secret",
+        "rotate": true,
+        "sameAs": "FG_ID_SERVICE_MEMBERS_SECRET",
+        "unlessMounted": "@fairgarden/id"
+      },
+      "FG_ID_SERVICE_MEMBERS_SECRET": {
+        "description": "The secret the id service knows members by. Beside it in a monolith, both read this one.",
+        "deployment": "@fairgarden/id",
+        "required": "deployed",
+        "generate": "secret",
+        "rotate": true,
+        "verifies": true
+      },
+      "FG_ID_SERVICE_MEMBERS_URL": {
+        "description": "Where members is, for the id service to send people back to.",
+        "deployment": "@fairgarden/id",
+        "required": "deployed",
+        "example": "https://members.example.org",
+        "unlessMounted": "@fairgarden/id"
+      },
+      "FG_ID_SERVICE_MEMBERS_CLAIMS": {
+        "description": "What members answers the id service for.",
+        "deployment": "@fairgarden/id",
+        "required": "deployed",
+        "value": "membership",
+        "unlessMounted": "@fairgarden/id"
+      }
+    }
+  }
 }

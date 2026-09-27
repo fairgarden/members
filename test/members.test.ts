@@ -2,7 +2,7 @@ import path from 'node:path'
 import { sql } from 'drizzle-orm'
 import { describe, expect, it } from 'vitest'
 import { db } from '@fairgarden/members/lib/db'
-import { migrate, rollback } from '@fairgarden/members/lib/migrator'
+import { declaredMigrations, migrate, rollback } from '@fairgarden/distribution/migrations'
 import {
   admitMember,
   createReferral,
@@ -73,14 +73,14 @@ describe('members', () => {
   })
 
   it('roll back to nothing and forward again', async () => {
-    const migrations = path.join(ROOT, 'drizzle')
-    expect(await rollback(database.pool, migrations, { to: '0' })).toEqual([
+    const migrations = declaredMigrations(ROOT)!
+    expect(await rollback(database.pool, migrations.directory, migrations, { to: '0' })).toEqual([
       '0003_policy_revisions',
       '0002_referrals',
       '0001_policy_decisions',
       '0000_init',
     ])
-    expect(await migrate(database.pool, migrations)).toEqual([
+    expect(await migrate(database.pool, migrations.directory, migrations)).toEqual([
       '0000_init',
       '0001_policy_decisions',
       '0002_referrals',

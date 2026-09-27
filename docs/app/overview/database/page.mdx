@@ -12,4 +12,8 @@ pnpm db:status
 ```
 
 Each migration's rollback is the hand-written `<tag>.down.sql` beside it. A
-real database is only migrated by `pnpm db:migrate`.
+real database is migrated by the build that deploys it — `pnpm migrate`, which
+is `fg-dist migrate --build` and runs after `next build` — or by hand with
+`pnpm db:migrate`, never at start-up. In a monolith, its build migrates this
+app along with the others it mounts, each recorded in its own journal
+(`members_migrations` here), so they can share one database.
