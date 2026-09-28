@@ -56,3 +56,8 @@ CLAUDE.md
 
 # fg-policy build: these rules alone, for trying locally
 /policies.tar.gz
+
+# Next.js build dirs at any depth: the docs site's, the NEXT_DIST_DIR ones
+# parallel builds use, and any Turbopack writes outside docs/.
+.next
+.next-*
