@@ -1,7 +1,9 @@
 # Claims reviews
 
 The id service enrols members with `FG_ID_SERVICE_MEMBERS_CLAIMS=membership`,
-so the `membership` scope is this service's. When a person is deciding whether
+so the `membership` scope is this service's.
+
+When a person is deciding whether
 to share it with another service, and whenever it is released to one, the id
 service POSTs a `ClaimsReview` to `/api/v1alpha1/claimsreviews`.
 
